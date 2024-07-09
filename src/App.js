@@ -2,7 +2,7 @@ import Header from "./components/Header/Header";
 import "./index.css";
 import { API_URL, LIMIT } from "./config";
 import { useEffect, useState } from "react";
-import { getPokemon, getPokemonAll } from "./utils/getPokemon";
+import { getPokemon, getPokemonAll, getPokemonSpecies, getPokemonTypes } from "./utils/getPokemon";
 import Card from "./components/Card/Card";
 import Footer from "./components/Footer/Footer";
 
@@ -12,15 +12,16 @@ function App() {
   const [page, setPage] = useState(1);
   const [nextURL, setNextURL] = useState("");
   const [prevURL, setPrevURL] = useState("");
+  const [japanese, setJapanese] = useState(false);
 
   useEffect(() => {
     const fetchPokemonAll = async () => {
       let res = await getPokemonAll(API_URL);
-      console.log(res);
 
       loadPokemonData(res.results);
       setNextURL(res.next);
       setPrevURL(res.previous);
+      console.log(pokemonData);
       setPage(1)
       setLoading(false);
     };
@@ -29,13 +30,37 @@ function App() {
 
   const loadPokemonData = async (data) => {
     let _pokemonData = await Promise.all(
-      data.map((pokemon) => {
-        let pokemonDetail = getPokemon(pokemon.url);
-        return pokemonDetail;
-      })
+      data.map(async(pokemon) => {
+        let pokemonDetail = await getPokemon(pokemon.url);
+        let speciesDetail = await getPokemonSpecies(pokemonDetail.species.url);
+        if(!speciesDetail) return;
+
+        // get Japanese name
+        let japaneseNameObj = speciesDetail.names.find(name => name.language.name === "ja");
+        let japaneseName = japaneseNameObj ? japaneseNameObj.name : "Unknown";
+
+        // get Japanese types
+        let resPokemonTypes = pokemonDetail.types
+        let _pokemonType = await Promise.all(
+          resPokemonTypes.map(async (typeURL) => {
+            let typeDetail = await getPokemonTypes(typeURL.type.url)
+            let typeNameObj = typeDetail.names.find(name => name.language.name === 'ja')
+            return typeNameObj ? typeNameObj.name : "Unknown";
+          })
+        )
+        let joinedTypes = _pokemonType.join(' / ')
+
+        return {
+            ...pokemonDetail,
+            japaneseName: japaneseName,
+            japaneseTypes: joinedTypes,
+          };
+        }
+      )
     );
-    setPokemonData(_pokemonData);
+    setPokemonData(_pokemonData.filter(pokemon => pokemon !== null));
   };
+
 
   const handlePrevBtn = async () => {
     setLoading(true);
@@ -61,32 +86,44 @@ function App() {
     setLoading(false);
   };
 
+  const handleJapaneseBtn = (e) => {
+    setJapanese(!japanese)
+    const btn = e.target.closest('.btn__language');
+    // btn.classList.toggle('')
+  }
+
   return (
     <>
-      <Header />
+      <Header jaBtn={handleJapaneseBtn} isJapanese={japanese} />
       <main className="bg-gray-900">
-        <div className="grid-cols-1 lg:container mx-auto grid  gap-6 p-20 min-h-screen text-white lg:grid-cols-5 md:grid-cols-3">
-          {pokemonData.map((pokemon, i) => {
-            return <Card key={i} data={pokemon} />;
-          })}
-        </div>
-        <div className="pb-20 mx-auto flex gap-6 justify-center items-center lg:container">
-          <button
-            className="px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all hover:bg-purple-600"
-            onClick={handlePrevBtn}
-            disabled={page === 1}
-          >
-            Prev
-          </button>
-          <p className="text-white">{page}</p>
-          <button
-            className="px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all hover:bg-purple-600"
-            onClick={handleNextBtn}
-            disabled={LIMIT > pokemonData.length}
-          >
-            Next
-          </button>
-        </div>
+        {loading ? (
+          <div className="min-h-screen grid place-items-center"><p className="text-white">Loading...</p></div>
+        ) : (
+          <>
+          <div className="grid-cols-1 lg:container mx-auto grid  gap-6 p-20 min-h-screen text-white lg:grid-cols-5 md:grid-cols-3">
+            {pokemonData.map((pokemon, i) => {
+              return <Card key={i} data={pokemon} />;
+            })}
+          </div>
+          <div className="pb-20 mx-auto flex gap-6 justify-center items-center lg:container">
+            <button
+              className="px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all hover:bg-purple-600"
+              onClick={handlePrevBtn}
+              disabled={page === 1}
+            >
+              Prev
+            </button>
+            <p className="text-white">{page}</p>
+            <button
+              className="px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all hover:bg-purple-600"
+              onClick={handleNextBtn}
+              disabled={LIMIT > pokemonData.length}
+            >
+              Next
+            </button>
+          </div>
+          </>
+        ) }
       </main>
       <Footer />
     </>
