@@ -48,11 +48,12 @@ function App() {
           })
         )
         let joinedTypes = _pokemonType.join(' / ')
-
+        console.log(_pokemonType)
+        console.log(pokemonDetail.types)
         return {
             ...pokemonDetail,
             japaneseName: japaneseName,
-            japaneseTypes: joinedTypes,
+            japaneseTypes: _pokemonType,
           };
         }
       )
@@ -103,7 +104,7 @@ function App() {
           <>
           <div className="grid-cols-1 lg:container mx-auto grid  gap-6 p-20 min-h-screen text-white lg:grid-cols-5 md:grid-cols-3">
             {pokemonData.map((pokemon, i) => {
-              return <Card key={i} data={pokemon} />;
+              return <Card key={i} data={pokemon} isJapanese={japanese} />;
             })}
           </div>
           <div className="pb-20 mx-auto flex gap-6 justify-center items-center lg:container">
