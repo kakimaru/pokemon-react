@@ -1,5 +1,5 @@
 import Header from "./components/Header/Header";
-import "./index.css";
+import "./index.scss";
 import { API_URL, LIMIT } from "./config";
 import { useEffect, useState } from "react";
 import { getPokemon, getPokemonAll, getPokemonSpecies, getPokemonTypes } from "./utils/getPokemon";
@@ -21,7 +21,6 @@ function App() {
       loadPokemonData(res.results);
       setNextURL(res.next);
       setPrevURL(res.previous);
-      console.log(pokemonData);
       setPage(1)
       setLoading(false);
     };
@@ -97,7 +96,9 @@ function App() {
       <Header jaBtn={handleJapaneseBtn} isJapanese={japanese} />
       <main className="bg-gray-900">
         {loading ? (
-          <div className="min-h-screen grid place-items-center"><p className="text-white">Loading...</p></div>
+          <div className="min-h-screen grid place-items-center">
+            <p className="text-white">Loading...</p>
+          </div>
         ) : (
           <>
           <div className="grid-cols-1 lg:container mx-auto grid  gap-6 p-20 min-h-screen text-white lg:grid-cols-5 md:grid-cols-3">
