@@ -1,5 +1,5 @@
 import Header from "./components/Header/Header";
-import "./index.scss";
+import "./index.css";
 import { API_URL, LIMIT } from "./config";
 import { useEffect, useState } from "react";
 import { getPokemon, getPokemonAll, getPokemonSpecies, getPokemonTypes } from "./utils/getPokemon";
@@ -47,9 +47,7 @@ function App() {
             return typeNameObj ? typeNameObj.name : "Unknown";
           })
         )
-        let joinedTypes = _pokemonType.join(' / ')
-        console.log(_pokemonType)
-        console.log(pokemonDetail.types)
+
         return {
             ...pokemonDetail,
             japaneseName: japaneseName,
