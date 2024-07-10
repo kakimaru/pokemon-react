@@ -5,4 +5,5 @@ In the project directory, you can run: `npm start`
 I made a pokemon encyclopedia to practice React.
 
 ### Function
-comming soon
+- pagination
+- translate(Japanese / English)
