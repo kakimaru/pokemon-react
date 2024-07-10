@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 
 const Card = ({data, isJapanese}) => {
 
