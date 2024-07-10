@@ -88,13 +88,16 @@ function App() {
 
   const handleJapaneseBtn = (e) => {
     setJapanese(!japanese)
-    const btn = e.target.closest('.btn__language');
-    // btn.classList.toggle('')
   }
+
+  const handleReload = () => {
+    window.location.href = '/'
+  }
+
 
   return (
     <>
-      <Header jaBtn={handleJapaneseBtn} isJapanese={japanese} />
+      <Header jaBtn={handleJapaneseBtn} isJapanese={japanese} onReload={handleReload} />
       <main className="bg-gray-900">
         {loading ? (
           <div className="min-h-screen grid place-items-center">
@@ -109,7 +112,7 @@ function App() {
           </div>
           <div className="pb-20 mx-auto flex gap-6 justify-center items-center lg:container">
             <button
-              className="px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all hover:bg-purple-600"
+              className={`px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all ${page === 1 ? 'opacity-50' : 'hover:bg-purple-600' }`}
               onClick={handlePrevBtn}
               disabled={page === 1}
             >
@@ -117,7 +120,7 @@ function App() {
             </button>
             <p className="text-white">{page}</p>
             <button
-              className="px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all hover:bg-purple-600"
+              className={`px-12 py-3 border-2 border-purple-600 text-white rounded-lg transition-all hover:bg-purple-600 ${LIMIT > pokemonData.length ? 'opacity-50' : 'hover:bg-purple-600' }`}
               onClick={handleNextBtn}
               disabled={LIMIT > pokemonData.length}
             >
